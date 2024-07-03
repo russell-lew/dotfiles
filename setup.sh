@@ -14,8 +14,23 @@ ln -sf ~/dotfiles/nvim/* ~/.config/nvim/
 
 # Install tmux and nvim if not already installed (example for Ubuntu)
 echo '[SETUP] Installing tmux and nvim'
-sudo apt-get -qq update
-sudo apt-get install -y tmux neovim
+unameOut="$(uname -s)"
+case "${unameOut}" in
+    Linux*)     
+	    machine=Linux
+	    sudo apt-get -qq update
+	    sudo apt-get install -y tmux neovim
+	    ;;
+    Darwin*)    
+	    machine=Mac
+	    brew install tmux neovim
+	    ;;
+#   CYGWIN*)    machine=Cygwin;;
+#   MINGW*)     machine=MinGw;;
+#   MSYS_NT*)   machine=Git;;
+    *)          machine="UNKNOWN:${unameOut}"
+esac
 
-echo '[SETUP] Complete'
+
+echo '[SETUP] Complete setup'
 
