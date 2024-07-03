@@ -7,3 +7,8 @@ cd ~/dotfiles
 ./setup.sh
 ```
 
+## Colour scheme setup
+The colour scheme used for nvim and tmux is Catppucin - Frappe. 
+To set the terminal colours to match, follow the guide in this link: 
+https://github.com/catppuccin/windows-terminal
+
