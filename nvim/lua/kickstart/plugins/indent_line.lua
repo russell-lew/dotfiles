@@ -5,5 +5,8 @@ return {
     -- See `:help ibl`
     main = 'ibl',
     opts = {},
+    config = function()
+      vim.api.nvim_set_keymap('n', '<leader>ibl', ':IBLToggle<CR>', { noremap = true, silent = true })
+    end,
   },
 }
