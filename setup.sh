@@ -14,7 +14,7 @@ for file in "${HOME}/${folder}/nvim"/*; do
     ln -sf "$file" "${HOME}/.config/nvim/"
 done
 
-# Install tmux and nvim if not already installed (example for Ubuntu)
+# Install tmux and nvim and jetbrains font if not already installed (example for Ubuntu)
 echo '[SETUP] Installing tmux and nvim'
 unameOut="$(uname -s)"
 case "${unameOut}" in
@@ -26,6 +26,8 @@ case "${unameOut}" in
     Darwin*)    
 	    machine=Mac
 	    brew install tmux neovim
+	    brew install --cask font-jetbrains-mono-nerd-font
+
 	    ;;
 #   CYGWIN*)    machine=Cygwin;;
 #   MINGW*)     machine=MinGw;;
