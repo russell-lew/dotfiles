@@ -1,39 +1,55 @@
 #!/bin/bash
 
-# Clone the dotfiles repository
 folder=".dotfiles"
-if ! git "clone https://github.com/russell-lew/dotfiles.git" "${HOME}/${folder}" 2>/dev/null && [ -d "${HOME}/${folder}" ] ; then 
-	echo "[SETUP] Clone failed because the folder ${HOME}/${folder} already exists"
-fi
 
-# Create symlinks for tmux and nvim configuration
-echo '[SETUP] Creating Symbolic links for tmux and nvim configuration'
-ln -sf "${HOME}/${folder}/tmux/.tmux.conf" ${HOME}/.tmux.conf
-mkdir -p ~/.config/nvim
-for file in "${HOME}/${folder}/nvim"/*; do
-    ln -sf "$file" "${HOME}/.config/nvim/"
-done
-
-# Install tmux and nvim and jetbrains font if not already installed (example for Ubuntu)
-echo '[SETUP] Installing tmux and nvim'
+# Install editor tools and the system dependencies used by Mason, Treesitter,
+# Telescope, and the NVM installer.
+echo '[SETUP] Installing editor tools and dependencies'
 unameOut="$(uname -s)"
 case "${unameOut}" in
-    Linux*)     
-	    machine=Linux
+    Linux*)
 	    sudo apt-get -qq update
-	    sudo apt-get install -y tmux neovim
+	    sudo apt-get install -y \
+            build-essential curl fd-find git make neovim ripgrep tmux unzip wget xclip
 	    ;;
-    Darwin*)    
-	    machine=Mac
-	    brew install tmux neovim
+    Darwin*)
+        if ! command -v brew >/dev/null 2>&1; then
+            echo '[SETUP] Homebrew is required: https://brew.sh'
+            exit 1
+        fi
+        if ! xcode-select -p >/dev/null 2>&1; then
+            echo '[SETUP] Apple Command Line Tools are required. Run: xcode-select --install'
+            exit 1
+        fi
+	    brew install curl fd git make neovim ripgrep tmux unzip wget
 	    brew install --cask font-jetbrains-mono-nerd-font
 
 	    ;;
 #   CYGWIN*)    machine=Cygwin;;
 #   MINGW*)     machine=MinGw;;
 #   MSYS_NT*)   machine=Git;;
-    *)          machine="UNKNOWN:${unameOut}"
+    *)
+        echo "[SETUP] Unsupported operating system: ${unameOut}"
+        exit 1
 esac
+
+# Clone the dotfiles repository
+if ! git clone https://github.com/russell-lew/dotfiles.git "${HOME}/${folder}" 2>/dev/null; then
+    if [ -d "${HOME}/${folder}" ]; then
+        echo "[SETUP] Using existing ${HOME}/${folder}"
+    else
+        echo '[SETUP] Failed to clone the dotfiles repository'
+        exit 1
+    fi
+fi
+
+# Create symlinks for tmux and nvim configuration
+echo '[SETUP] Creating symbolic links for tmux and nvim configuration'
+ln -sf "${HOME}/${folder}/tmux/.tmux.conf" "${HOME}/.tmux.conf"
+mkdir -p "${HOME}/.config/nvim"
+for file in "${HOME}/${folder}/nvim"/*; do
+    ln -sf "$file" "${HOME}/.config/nvim/"
+done
 
 # Install NVM (Node Version Manager)
 echo '[SETUP] Installing NVM'
@@ -57,4 +73,3 @@ else
 fi
 
 echo '[SETUP] Complete setup'
-
